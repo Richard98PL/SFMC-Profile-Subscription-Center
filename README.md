@@ -30,7 +30,7 @@ Start like this:
     - ``` %%[ if 0 == 1 then ]%%%%profile_center_url%%%%[endif]%%```
     - ``` %%[ if 0 == 1 then ]%%%%subscription_center_url%%%%[endif]%%```
     - ``` %%[ if 0 == 1 then ]%%%%unsub_center_url%%%%[endif]%%```
- - Include email as a URL Parameter, but hash it and then Base64Encode to avoid wrong ascii chars in parameter
+ - Include email as a URL Parameter, but hash it and then Base64Encode to avoid wrong ASCII chars in parameter
    
 Great, now you are able to debugg in real-time isntead waiting infinity before Cloud Page would refresh itself.
 
