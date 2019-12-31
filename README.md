@@ -4,7 +4,7 @@ SFMC-Profile/Subscription Center
 How to build Custom SFMC Profile/Subscription Center?
 
 
-what do you need to know?
+What do you need to know?
 - AMP Script
 - SSJS
 - Cloud Pages
