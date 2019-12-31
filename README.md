@@ -34,7 +34,7 @@ Start like this:
    
 Great, now you are able to debugg in real-time isntead waiting infinity before Cloud Page would refresh itself.
 
-- Necessary code in WIKI: https://github.com/Richard98PL/SFMC-Profile-Subscription-Center/wiki
+- Necessary code in WIKI: https://github.com/Richard98PL/SFMC-Profile-Subscription-Center/wiki/1.-Home
 - Commented code in repository: https://github.com/Richard98PL/SFMC-Profile-Subscription-Center/blob/master/allNecessaryFunctions.js
 
 Enjoy
