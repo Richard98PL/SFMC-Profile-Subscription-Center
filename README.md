@@ -9,6 +9,11 @@ What do you need to know?
 - SSJS
 - Cloud Pages
 
+Choose between two scenarios about keeping user data
+- Subscriber Lists, Profile Attributes, Preferences
+- Data Extesnsion
+
+
 Start like this:
 
 - Create Microsite for our center.
@@ -21,6 +26,13 @@ Start like this:
 - Create code snippet in Content Builder for every page.
 - Paste this function with corresponding code snippet on each page 
     - ``` %%=ContentBlockbyKey("code-snippet-from-content-builder-key")=%% ```
+ - Hack MC and still include required links in emails
+    - ``` %%[ if 0 == 1 then ]%%%%profile_center_url%%%%[endif]%%```
+    - ``` %%[ if 0 == 1 then ]%%%%subscription_center_url%%%%[endif]%%```
+    - ``` %%[ if 0 == 1 then ]%%%%unsub_center_url%%%%[endif]%%```
+ - Include email as a URL Parameter, but hash it and then Base64Encode to avoid wrong ascii chars in parameter.
+   - ``` SET @email = Base64Encode(EncryptSymmetric(Email, @algorithm, @null, @password, @null, @salt, @null, @initVector)) ```
+  
     
 Great, now you are able to debugg in real-time isntead waiting infinity before Cloud Page would refresh itself.
 
