@@ -1,10 +1,15 @@
 <script type="text/javascript" runat="server"> //It is SSJS so must use runat="server"
  
+ 
+   // !-- INCLUDE IT IN EVERY SCRIPT --! //
+ 
     Platform.Load("core", "1"); //Load platform Core Library to avoid using Platform.Core.FunctionName everywhere
 
     var email = Variable.GetValue("@amp_email"); //you must decrypt and decode email parameter in AMP Script and that's way to get it in JS from AMP Script.
 
     Variable.SetValue("@amp_email","example@gmail.com");  //You can also set AMPScript value
+
+  // !-- ENDOF INCLUDE IT IN EVERY SCRIPT --! //
 
 
 
@@ -129,6 +134,11 @@
 </head>
 
 // !-- ENDOF NAV AND HEADER FOR OUR MICROSITES --! //
+
+
+
+
+
 
 
 
