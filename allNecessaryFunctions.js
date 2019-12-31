@@ -153,7 +153,7 @@
       
     <tr> //text field example
      <td>First Name</td>
-        <td><input name="first_name" required type="text" class="input-group" value="<ctrl:var name=firstName default=0/>"></td>
+        <td><input name="first_name" required type="text" value="<ctrl:var name=firstName default=0/>"></td>
        </tr>
 
        <tr> //select with default values based on subscriber fields/data extension columns 
@@ -173,8 +173,8 @@
       </tr>
         
       <tr>
-        <td style="text-decoration: underline; ">All Subscribers</td>
-            <td><input id="all_subscribers" name="all_subscribers" class="input-group" type="checkbox" onclick="allSubsFunction(this)" <ctrl:var name=allSubscribersCheckbox/>  ></td> //checkbox example 
+        <td">All Subscribers</td> //checkbox example
+            <td><input id="all_subscribers" name="all_subscribers" type="checkbox" onclick="allSubsFunction(this)" <ctrl:var name=allSubscribersCheckbox/>  ></td>
             //we have to set this ->^<- value for string "checked" in order to have checkbox ticked
       </tr>  
 </form>
