@@ -16,7 +16,7 @@ How to build Custom SFMC Profile/Subscription Center?
 3. Write NOTHING in Cloud Pages (atleast while debugging)
 4. Create code snippet in Content Builder for every page.
 5. Paste this function with corresponding code snippet on each page 
-    - %%=ContentBlockbyKey("code-snippet-from-content-builder-key")=%%
+    - ``` %%=ContentBlockbyKey("code-snippet-from-content-builder-key")=%% ```
     
 Great, now you are able to debugg in real-time isntead waiting infinity before Cloud Page would refresh itself.
 
