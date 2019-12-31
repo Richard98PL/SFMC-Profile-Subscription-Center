@@ -9,7 +9,7 @@ How to build Custom SFMC Profile/Subscription Center?
 
 1. Create Microsite for our center.
 2. Create those pages:
-  - Profile Center
+  -> Profile Center
   - Subscription Center
   - Home Page (default)
   - One-Click Unsubscribe Page
