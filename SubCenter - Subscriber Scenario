@@ -1,0 +1,130 @@
+<html>
+    <nav>
+        <ul>
+            <li>
+            %%[
+                SET @SubscriptionCenterPageURL = CloudPagesURL(1596)
+                SET @ProfileCenterPageURL = CloudPagesURL(1590)
+                SET @ResultsPageURL = CloudPagesURL(1592)
+                SET @HomePageURL = CloudPagesURL(1599)
+            
+            IF EMPTY(RequestParameter('email')) THEN
+                Redirect(@HomePageUrl)
+            ELSE
+                SET @salt = "e0cf1267f564b362"
+                SET @password = "ryszard"
+                SET @initVector = "4963b7334a46352623252955df21d7f3"
+                SET @EmailDecryptedNotDecoded = RequestParameter('email')
+                SET @EmailDecrypted = DecryptSymmetric(Base64Decode(RequestParameter('email')), "tripledes;mode=ecb;padding=ansix923", 
+                @null, @password, 
+                @null, @salt, 
+                @null, @initVector
+                )
+    
+            VAR @CheckIfSubscriber
+            ENDIF
+            ]%%
+            <a href="%%=Concat(RedirectTo(@SubscriptionCenterPageURL),'?email=',RequestParameter('email'))=%%">Subscription Center Page</a>
+            </li>
+            <li>
+            <a href="%%=Concat(RedirectTo(@ProfileCenterPageURL),'?email=',RequestParameter('email'))=%%">Profile Center Page</a>
+            </li>
+        </ul>
+    
+    </nav>
+      
+    <head>
+      <link rel="stylesheet" type="text/css" href="%%=CloudPagesURL(1597)=%%">
+      <link rel="stylesheet" type="text/css" href="%%=CloudPagesURL(1600)=%%">
+      <script src="%%=CloudPagesURL(1593)=%%"></script><!-- stars -->
+    </head>
+
+<body>
+  
+
+<script type="text/javascript" runat="server">
+    
+    Platform.Load("core", "1");
+    var decodedEmail = Variable.GetValue("@EmailDecrypted");
+    if (Request.Method == "POST"){
+        
+        var subscriber = Subscriber.Init(decodedEmail);
+        var rogalexList = List.Init("RogalexList - 3010");
+        var rogalexWebList = List.Init("RogalexWebList - 3010");
+        var isFullRemovalDone = false;
+        
+        if(Request.GetFormField("all_subscribers") == null){
+        var status = subscriber.Remove();
+        Write(Stringify(status));
+        isFullRemovalDone = true;
+        }
+        
+        /*if(Request.GetFormField("all_subscribers") != null){
+        var status = subscriber.Upsert();
+        Write(status);
+        }*/ //you can't add to the all subscribers :) its auto
+        
+        if(Request.GetFormField("rogalex_list") == null  && !isFullRemovalDone){
+        var status = rogalexList.Subscribers.Unsubscribe(decodedEmail);
+        }
+        
+        if(Request.GetFormField("rogalex_list") != null){
+        var status = rogalexList.Subscribers.Upsert(decodedEmail);
+        }
+        
+        if(Request.GetFormField("rogalex_web_list") == null  && !isFullRemovalDone){
+        var status = rogalexWebList.Subscribers.Unsubscribe(decodedEmail);
+        }
+        
+        if(Request.GetFormField("rogalex_web_list") != null){
+        var status = rogalexWebList.Subscribers.Upsert(decodedEmail);
+        }  
+    }   
+    var subscriber = Subscriber.Init(decodedEmail);
+    var list1 = "checked";
+    
+    var listJSON = subscriber.Lists.Retrieve();
+    
+    for(var i = 0; i < listJSON.length ; i++){
+        if(listJSON[i]["List"]["Name"] === "All Subscribers"){
+            if(  listJSON[i]["Status"] == "Active")var allSubscribersCheckbox = "checked";
+        }
+        else if(listJSON[i]["List"]["Name"] == "RogalexList"){
+            if(  listJSON[i]["Status"]  == "Active")var rogalexListCheckbox = "checked";
+        }else if(listJSON[i]["List"]["Name"] == "RogalexWebList"){
+            if(  listJSON[i]["Status"]  == "Active")var rogalexWebListCheckbox = "checked";
+        } 
+    }
+    
+</script>
+     
+<form method="POST" style="z-index:5;" action="%%=Concat(RedirectTo(@SubscriptionCenterPageURL),'?email=',RequestParameter('email'))=%%">
+    <table class="input-group" >
+        
+            <tr>
+        <td style="text-decoration: underline; ">All Subscribers</td>
+        <td><input id="all_subscribers" name="all_subscribers" class="input-group" type="checkbox" onclick="allSubsFunction(this)" <ctrl:var name=allSubscribersCheckbox/>  ></td>
+        </tr>
+        
+        <tr>
+        <td>Rogalex List</td>
+        <td><input id="rogalex_list" name="rogalex_list" class="input-group" type="checkbox" onclick="notAllSubsCheckboxFunction(this)" <ctrl:var name=rogalexListCheckbox/> ></td>
+        </tr>
+        
+        <tr>
+        <td>Rogalex Web List</td>
+        <td><input id="rogalex_web_list" name="rogalex_web_list" class="input-group" type="checkbox" onclick="notAllSubsCheckboxFunction(this)" <ctrl:var name=rogalexWebListCheckbox/> ></td>
+        </tr>
+        
+    </table>
+
+    <input name="id" value="<ctrl:var name=id/>" type="text" hidden>
+    
+    <div class="input-group">
+        <button type="submit" class="btn" name="login_user">Submit</button>
+    </div>
+    
+</form>  
+</div>
+</body>
+</html>
