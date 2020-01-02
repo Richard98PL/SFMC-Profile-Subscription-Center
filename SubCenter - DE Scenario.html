@@ -1,0 +1,157 @@
+<html>
+    <nav>
+        <ul>
+            <li>
+            %%[
+                SET @SubscriptionCenterPageURL = CloudPagesURL(1596)
+                SET @ProfileCenterPageURL = CloudPagesURL(1590)
+                SET @ResultsPageURL = CloudPagesURL(1592)
+                SET @HomePageURL = CloudPagesURL(1599)
+            
+            IF EMPTY(RequestParameter('email')) THEN
+                Redirect(@HomePageUrl)
+            ELSE
+                SET @salt = "e0cf1267f564b362"
+                SET @password = "ryszard"
+                SET @initVector = "4963b7334a46352623252955df21d7f3"
+                SET @EmailDecryptedNotDecoded = RequestParameter('email')
+                SET @EmailDecrypted = DecryptSymmetric(Base64Decode(RequestParameter('email')), "tripledes;mode=ecb;padding=ansix923", 
+                @null, @password, 
+                @null, @salt, 
+                @null, @initVector
+                )
+    
+            VAR @CheckIfSubscriber
+            ENDIF
+            ]%%
+            <a href="%%=Concat(RedirectTo(@SubscriptionCenterPageURL),'?email=',RequestParameter('email'))=%%">Subscription Center Page</a>
+            </li>
+            <li>
+            <a href="%%=Concat(RedirectTo(@ProfileCenterPageURL),'?email=',RequestParameter('email'))=%%">Profile Center Page</a>
+            </li>
+        </ul>
+    
+    </nav>
+      
+    <head>
+      <link rel="stylesheet" type="text/css" href="%%=CloudPagesURL(1597)=%%">
+      <link rel="stylesheet" type="text/css" href="%%=CloudPagesURL(1600)=%%">
+      <script src="%%=CloudPagesURL(1593)=%%"></script><!-- stars -->
+    </head>
+<body>
+
+  <script type="text/javascript" runat="server">
+
+    Platform.Load("core", "1");
+    if (Request.Method == "POST") {
+      
+        var id = Request.GetFormField("id"); Write(id);
+        var firstName = Request.GetFormField("first_name"); 
+        var lastName = Request.GetFormField("last_name"); 
+        var email = Request.GetFormField("post_email"); 
+        var role = Request.GetFormField("role"); 
+        var salutation = Request.GetFormField("salutation"); 
+        var country = Request.GetFormField("country"); 
+      
+        var country_id = Platform.Function.Lookup("Country_Info__c_Salesforce","Id","Name",country);
+        var fields = ["FirstName","LastName","Email","Role__c","Salutation","Country__c"];
+        var values = [firstName,lastName,email,role,salutation,country_id];
+      
+        var result =  Platform.Function.UpdateData("sk_salesforce_contacts_testable",["Id"],[id],fields,values );
+
+        var js_salutation = salutation;
+        var js_country = country;
+      
+    }
+
+  </script>
+  
+  <script type="text/javascript" runat="server">
+ 
+    if(Request.Method != "POST") {
+      Platform.Load("core", "1");
+
+      var contactEmail = Variable.GetValue("@EmailDecrypted");
+          
+      var dataRows = Platform.Function.LookupOrderedRows("sk_salesforce_contacts_testable ",1,"Email desc","Email",contactEmail);
+  
+      var id = dataRows[0]["Id"];
+      var firstName = dataRows[0]["FirstName"];
+      var lastName = dataRows[0]["LastName"];
+      var email = dataRows[0]["Email"];
+      var role = dataRows[0]["Role__c"];
+      var js_salutation = dataRows[0]["Salutation"];
+
+      var country_junction = dataRows[0]["Country__c"];
+      var js_country = Platform.Function.Lookup("Country_Info__c_Salesforce","Name","Id",country_junction);*/     
+     }
+    
+  </script>
+ 
+  <form method="POST" action="%%=Concat(RedirectTo(@ProfileCenterPageURL),'?email=',RequestParameter('email'))=%%">
+    <table class="input-group">
+      
+   <tr>
+    <td>First Name</td>
+       <td><input name="first_name" required type="text" class="input-group" value="<ctrl:var name=firstName default=0/>"></td>
+      </tr>
+      
+      <tr>
+     <td>Last Name</td>
+        <td><input name="last_name" class="input-group" required type="text" value="<ctrl:var name=lastName default=0/>"></td>
+      </tr>
+      
+      <tr>
+    <td>Email</td>
+        <td><input name="post_email" class="input-group" required type="email" value="<ctrl:var name=email/>"></td>
+      </tr>
+      
+      <tr>
+    <td>Role</td>
+       <td><input name="role" class="input-group" type="text" value="<ctrl:var name=role/>"></td>
+      </tr>
+      
+      <tr>
+        <td>Salutation</td> 
+        <td>
+          <select name="salutation" class="input-group">
+            %%[ SET @salutation= "" ]%%
+            <script type="text/javascript" runat="server"> Variable.SetValue("@salutation",js_salutation) </script>
+
+            <option value="Mr." %%=IIF(@salutation=='Mr.','selected','')=%%>Mr. </option>
+            <option value="Mrs." %%=IIF(@salutation=='Mrs.','selected','')=%%>Mrs. </option>
+            <option value="Dr." %%=IIF(@salutation=='Dr.','selected','')=%%>Dr. </option>
+
+          </select>
+        </td>
+      </tr>
+      
+      <tr>
+        <td>Country</td>
+        <td>
+          <select name="country" class="input-group">
+            %%[ SET @country= "" ]%%
+            <script type="text/javascript" runat="server"> Variable.SetValue("@country",js_country) </script>
+
+            <option value="Poland" %%=IIF(@country=='Poland','selected','')=%%>Poland</option>
+            <option value="Germany" %%=IIF(@country=='Germany','selected','')=%%>Germany</option>
+            <option value="Russia" %%=IIF(@country=='Russia','selected','')=%%>Russia</option>
+
+          </select>
+        </td>
+   </tr>
+    </table>
+
+    <input name="id" value="<ctrl:var name=id/>" type="text" hidden>
+    
+    <div class="input-group">
+        <button type="submit" class="btn" name="login_user">Submit</button>
+    </div>
+
+  </form>
+ 
+</body>
+  
+    
+  
+</html>
