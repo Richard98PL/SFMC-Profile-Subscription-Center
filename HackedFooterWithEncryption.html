@@ -24,11 +24,15 @@
     <br>
         &nbsp; 
     %%[
-    set @salt = "e0cf1267f564b362"
-    set @password = "ryszard"
-    set @initVector = "4963b7334a46352623252955df21d7f3"
+    SET @salt = "e0cf1267f564b362"
+    SET @password = "ryszard"
+    SET @initVector = "4963b7334a46352623252955df21d7f3"
 
-    SET @email = Base64Encode(EncryptSymmetric(Email, "tripledes;mode=ecb;padding=ansix923", @null, @password, @null, @salt, @null, @initVector))
+    SET @email = Base64Encode(EncryptSymmetric(Email, "tripledes;mode=ecb;padding=ansix923", 
+        @null, @password, 
+        @null, @salt, 
+        @null, @initVector))
+        
     Set @urlSubscriptionPage = Concat('https://pub.s50.exacttarget.com/szwn1xo33rw/zfyf03dwetp?email=',@email)]
     Set @urlProfilePage = Concat('https://pub.s50.exacttarget.com/szwn1xo33rw/lqxnwqd0lfc?email=',@email)]
     Set @oneClickUnsub = Concat('https://pub.s50.exacttarget.com/szwn1xo33rw/4fd4w2p0j4j?email=',@email)]
@@ -37,6 +41,7 @@
     %%[ if 0 == 1 then ]%%%%profile_center_url%%%%[endif]%%
     %%[ if 0 == 1 then ]%%%%subscription_center_url%%%%[endif]%%
     %%[ if 0 == 1 then ]%%%%unsub_center_url%%%%[endif]%%
+        
     <a href="%%=RedirectTo(@urlProfilePage)=%%" alias="Update Profile" target="_blank" style="font-size:12px; color:white; text-decoration: none; text-align: left;">Update Profile</a>
         &nbsp; 
     <a href="%%=RedirectTo(@urlSubscriptionPage)=%%" alias="Manage Subscriptions" target="_blank" style="font-size:12px; color: white; text-decoration: none; text-align: center;">Manage Subscriptions</a>
