@@ -1,0 +1,227 @@
+<html>
+<nav>
+    <ul>
+        <li>
+        %%[
+            SET @SubscriptionCenterPageURL = CloudPagesURL(1596)
+            SET @ProfileCenterPageURL = CloudPagesURL(1590)
+            SET @ResultsPageURL = CloudPagesURL(1592)
+            SET @HomePageURL = CloudPagesURL(1599)
+        
+        IF EMPTY(RequestParameter('email')) THEN
+            Redirect(@HomePageUrl)
+        ELSE
+            SET @salt = "e0cf1267f564b362"
+            SET @password = "ryszard"
+            SET @initVector = "4963b7334a46352623252955df21d7f3"
+            SET @EmailDecryptedNotDecoded = RequestParameter('email')
+            SET @EmailDecrypted = DecryptSymmetric(Base64Decode(RequestParameter('email')), "tripledes;mode=ecb;padding=ansix923", 
+            @null, @password, 
+            @null, @salt, 
+            @null, @initVector
+            )
+
+        VAR @CheckIfSubscriber
+        ENDIF
+        ]%%
+        <a href="%%=Concat(RedirectTo(@SubscriptionCenterPageURL),'?email=',RequestParameter('email'))=%%">Subscription Center Page</a>
+        </li>
+        <li>
+        <a href="%%=Concat(RedirectTo(@ProfileCenterPageURL),'?email=',RequestParameter('email'))=%%">Profile Center Page</a>
+        </li>
+    </ul>
+
+</nav>
+  
+<head>
+  <link rel="stylesheet" type="text/css" href="%%=CloudPagesURL(1597)=%%">
+  <link rel="stylesheet" type="text/css" href="%%=CloudPagesURL(1600)=%%">
+  <script src="%%=CloudPagesURL(1593)=%%"></script><!-- stars -->
+</head>
+
+<body>
+
+<script type="text/javascript" runat="server">
+
+    Platform.Load("core", "1");
+
+    var s_email, s_firstName, s_lastName, s_role,s_salutation, s_country, s_physicalAddress, s_emailTypePreference, s_sms;
+    var results = Subscriber.Retrieve({Property:"EmailAddress",SimpleOperator:"equals",Value:Variable.GetValue("@EmailDecrypted")}); 
+    s_email = results[0]["EmailAddress"];
+
+    if (Request.Method == "POST"){
+       var subscriber = Subscriber.Init("adwokatdbl@gmail.com");
+      
+      s_sms = "False";
+      if(Request.GetFormField("s_smsCB") != null){
+        s_sms = "True";
+      }
+      
+      s_emailTypePreference = "Text";
+      if(Request.GetFormField("s_emailTypePreferenceCB") != null){
+        s_emailTypePreference = "HTML";
+      }
+      Write(s_emailTypePreference);
+         
+      var data = {
+     "EmailTypePreference": s_emailTypePreference,
+      "Attributes":{"First Name": Request.GetFormField("first_name"),
+                    "Last Name":Request.GetFormField("last_name"),
+                    "PhysicalAddress" : Request.GetFormField("physical_Address"),
+                     "Role" : Request.GetFormField("role"),
+                     "Salutation" : Request.GetFormField("salutation"),
+                    "Country__c": Request.GetFormField("country"),
+                    "SMS" : s_sms
+                   }   
+    };
+
+    var status = subscriber.Update(data);}
+    var subscriber = Subscriber.Init(Variable.GetValue("@EmailDecrypted"));
+    var attributes = subscriber.Attributes.Retrieve();
+
+    for(var i = 0; i<attributes.length; i++){
+      if(attributes[i].Name === "First Name"){
+       s_firstName = attributes[i].Value;
+      }
+      if(attributes[i].Name === "Last Name"){
+       s_lastName = attributes[i].Value;
+      }
+      if(attributes[i].Name === "First Name"){
+       s_firstName = attributes[i].Value;
+      }
+       if(attributes[i].Name === "Role"){
+       s_role = attributes[i].Value;
+      }
+      if(attributes[i].Name === "Salutation"){
+       s_salutation = attributes[i].Value;
+      }
+       if(attributes[i].Name === "Country__c"){
+       s_country = attributes[i].Value;
+      }
+      if(attributes[i].Name === "PhysicalAddress"){
+       s_physicalAddress = attributes[i].Value;
+      }
+      if(attributes[i].Name === "SMS"){
+       s_sms = attributes[i].Value;
+        if(s_sms  != "False" )s_sms = "checked";
+      }
+      if(attributes[i].Name === "Rogalex Everyday List"){
+       s_rogalexEveryDayList = attributes[i].Value;
+        if(s_rogalexEveryDayList != "False")s_rogalexEveryDayList = "checked";
+      }
+    }
+ 
+    var results = Subscriber.Retrieve({Property:"EmailAddress",SimpleOperator:"equals",Value:Variable.GetValue("@EmailDecrypted")});
+    s_emailTypePreference = results[0]["EmailTypePreference"];
+    Write(s_emailTypePreference);
+    if(s_emailTypePreference == "HTML")s_emailTypePreference = "checked";
+    Write(s_emailTypePreference);
+    
+</script>
+  
+  <form method="POST" style="z-index:5;" action="%%=Concat(RedirectTo(@ProfileCenterPageURL),'?email=',RequestParameter('email'))=%%">
+    <table class="input-group" >
+      
+   <tr>
+    <td>First Name</td>
+       <td><input name="first_name" required type="text" class="input-group" value="<ctrl:var name=s_firstName default=0/>"></td>
+      </tr>
+      
+      <tr>
+     <td>Last Name</td>
+        <td><input name="last_name" class="input-group" required type="text" value="<ctrl:var name=s_lastName default=0/>"></td>
+      </tr>
+      
+      <tr>
+    <td>Email</td>
+        <td><input name="post_email" class="input-group" required type="email" value="<ctrl:var name=s_email/>"></td>
+      </tr>
+      
+       <tr>
+    <td>Physical Address</td>
+        <td><input name="physical_Address" class="input-group" required type="text" value="<ctrl:var name=s_physicalAddress/>"></td>
+      </tr>
+      
+      <tr>
+    <td>Role</td>
+       <td><input name="role" class="input-group" type="text" value="<ctrl:var name=s_role/>"></td>
+      </tr>
+      
+      <tr>
+        <td>Salutation</td> 
+        <td>
+          <select name="salutation" class="input-group">
+            %%[ SET @salutation= "" ]%%
+            <script type="text/javascript" runat="server"> Variable.SetValue("@salutation",s_salutation) </script>
+
+            <option value="Mr." %%=IIF(@salutation=='Mr.','selected','')=%%>Mr. </option>
+            <option value="Mrs." %%=IIF(@salutation=='Mrs.','selected','')=%%>Mrs. </option>
+            <option value="Dr." %%=IIF(@salutation=='Dr.','selected','')=%%>Dr. </option>
+
+          </select>
+        </td>
+      </tr>
+      
+      <tr>
+        <td>Country</td>
+        <td>
+          <select name="country" class="input-group">
+            %%[ SET @country= "" ]%%
+            <script type="text/javascript" runat="server"> Variable.SetValue("@country",s_country) </script>
+
+            <option value="Poland" %%=IIF(@country=='Poland','selected','')=%%>Poland</option>
+            <option value="Germany" %%=IIF(@country=='Germany','selected','')=%%>Germany</option>
+            <option value="Russia" %%=IIF(@country=='Russia','selected','')=%%>Russia</option>
+
+          </select>
+        </td>
+   </tr>
+              
+    <tr>
+     <td>HTML Emails</td>
+        <td>
+          <input name="s_emailTypePreferenceCB" class="input-group" type="checkbox" <ctrl:var name=s_emailTypePreference/> ></td>
+      </tr>
+      
+      <tr>
+     <td>SMS</td>
+        <td><input name="s_smsCB" class="input-group" type="checkbox" <ctrl:var name=s_sms/> ></td>
+      </tr>
+      
+    </table>
+
+    <input name="id" value="<ctrl:var name=id/>" hidden>
+    
+    <div class="input-group">
+        <button type="submit" class="btn" name="login_user">Submit</button>
+    </div>
+ 
+  </form> 
+
+<script type="text/javascript" runat="server">
+ 
+    try{
+      var decodedEmail = Variable.GetValue("@EmailDecrypted");
+      var subscriber = Subscriber.Init(decodedEmail);    
+      var listJSON = subscriber.Lists.Retrieve();
+      if(listJSON.length == 0){
+        Variable.SetValue("@CheckIfSubscriber","non-subscriber");
+      } 
+    }
+  catch(e){
+    Write(e);
+  }
+  
+</script>
+
+%%[ 
+    Output(v(@CheckIfSubscriber)) 
+    IF @CheckIfSubscriber == "non-subscriber" THEN 
+        Redirect(Concat(@SubscriptionCenterPageURL,'?email=',RequestParameter('email'))) 
+    ENDIF 
+]%%
+
+
+</body>
+
+</html>
